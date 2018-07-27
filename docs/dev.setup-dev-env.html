@@ -1,0 +1,107 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>Setup a dev environment · Invest</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="We&#x27;ll first setup a development environment for Invest."/><meta name="docsearch:language" content="en"/><meta property="og:title" content="Setup a dev environment · Invest"/><meta property="og:type" content="website"/><meta property="og:url" content="https://commitd.github.com/invest/index.html"/><meta property="og:description" content="We&#x27;ll first setup a development environment for Invest."/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/undefined"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><link rel="stylesheet" href="/css/main.css"/></head><body class="sideNavVisible"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/"><h2 class="headerTitle">Invest</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class=""><a href="/docs/about.html" target="_self">About</a></li><li class="siteNavGroupActive"><a href="/docs/dev.reading-list.html" target="_self">Development</a></li><li class=""><a href="/docs/ui.index.html" target="_self">UI</a></li><li class=""><a href="/docs/server.index.html" target="_self">Server</a></li><li class=""><a href="https://github.com/commitd/invest-server" target="_self">Server Source</a></li><li class=""><a href="https://github.com/commitd/invest-ui" target="_self">UI Source</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><i></i></div><h2><i>›</i><span>Starting</span></h2></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle">Starting</h3><ul><li class="navListItem"><a class="navItem" href="/docs/dev.reading-list.html">Reading List</a></li><li class="navListItem navListItemActive"><a class="navItem" href="/docs/dev.setup-dev-env.html">Setup a dev environment</a></li></ul></div></div></section></div><script>
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              const headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                if (event.target.tagName === 'A') {
+                  document.body.classList.remove('tocActive');
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1 class="postHeaderTitle">Setup a dev environment</h1></header><article><div><span><p>We'll first setup a development environment for Invest.</p>
+<p><strong>Note that you don't need this is you just want to develop plugins or build an application from Invest. You only require this setup if you want to develop the Invest codebase itself.</strong></p>
+<h2><a class="anchor" aria-hidden="true" id="dependencies"></a><a href="#dependencies" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Dependencies</h2>
+<pre><code class="hljs css languages- bash">mkdir invest
+<span class="hljs-built_in">cd</span> invest
+</code></pre>
+<p>Clone the Git repositories. One contains the server side Java code and the other is for the UI elements:</p>
+<pre><code class="hljs css languages- bash">git <span class="hljs-built_in">clone</span> git@bitbucket.org:committed/invest-java.git
+git <span class="hljs-built_in">clone</span> git@bitbucket.org:committed/invest-js.git
+</code></pre>
+<p>This will create two sub directories, <code>invest-java</code> and <code>invest-js</code>.</p>
+<p>Install the UI dependencies, create the inter dependencies between the projects using Lerna:</p>
+<pre><code class="hljs css languages- bash"><span class="hljs-built_in">cd</span> invest-js
+lerna bootstrap
+yarn build
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" id="building-a-complete-invest-application-with-plugins-on-the-command-line"></a><a href="#building-a-complete-invest-application-with-plugins-on-the-command-line" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Building a complete Invest application with plugins on the command line</h2>
+<p>We recommend that you test your build environment from the commandline first. This will also download all the maven dependencies and some other files from the Internet (thus you need to be online).</p>
+<p>To compile the complete Invest code, the invest-java repository has scripts to help:</p>
+<pre><code class="hljs css languages- bash"><span class="hljs-built_in">cd</span> invest-js
+yarn build
+<span class="hljs-built_in">cd</span> ../invest-java
+./build-with-ui.sh ../invest-js
+</code></pre>
+<p>The <code>../invest-js</code> is the path to the JS elements. So if you have these in a different directory then amend this command appropriately.</p>
+<p>This will build the UI, copy it into the Java UI plugins, then build the Java plugins and applications, finally placing all the resulting artifacts into the <code>build/</code> directory.</p>
+<p>You can build the UI alone with:</p>
+<pre><code class="hljs css languages- bash"><span class="hljs-built_in">cd</span> invest-js
+yarn build
+</code></pre>
+<p>To build the Java component alone run:</p>
+<pre><code class="hljs css languages- bash"><span class="hljs-built_in">cd</span> invest-java
+mvn clean package install
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" id="developing-the-java-server-with-an-ide"></a><a href="#developing-the-java-server-with-an-ide" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Developing the Java server with an IDE</h2>
+<p>When developing you will want to use an IDE. We use Eclipse as an example of the intended process.</p>
+<p>First import all the Maven projects by File &gt; Import &gt; Existing Maven Projects and selecting the <code>invest-java</code> directory as the Root Directory. We'd suggest adding all these projects to a Eclipse Working Set (called <code>Invest</code>).</p>
+<p>Once imported, you can run the project from the IDE by running the <code>invest-server-app</code> project, specifically the <code>io.committed.invest.server.app.Invest</code> main class.</p>
+<p>This should run successfully but it will be a empty server. In fact it will contain virtually no functionality, as the <code>invest-server-app</code> does not contain any of the plugins by default. With Eclipse you can add the additional plugins projects by:</p>
+<ul>
+<li>Stopping the application (if running)</li>
+<li>Goto Debug Configurations (or Run Configuration equivalently) located under the Run menu (or as a drop down on the Debug/Run buttons on the toolbar).</li>
+<li>Select the <code>invest-server-app</code> run, then the ClassPath tab.</li>
+<li>Click on <code>User Entries</code> and then <code>Add Projects..</code></li>
+<li>Select all the plugins you want for example all the projects prefixed <code>invest-plugin-</code>. If you are developing custom plugins you should add those too. Click <code>Apply</code>.</li>
+<li>If you want to debug these plugins then click on the the <code>Source</code> tab, click <code>Add</code> and select the same projects. This tells Eclipse where to find the source code when you hit a breakpoint.</li>
+</ul>
+<p>Note that when developing changes to the UI will not be reflected unless you do a complete <code>build-with-ui.sh</code>. This will copy over the UI code into the Java projects. (Depending on your Eclipse settings you may need to run 'Refresh' against the projects / working set so that changes are found by Eclipse).</p>
+<h2><a class="anchor" aria-hidden="true" id="developing-the-invest-ui-application-or-core-library-with-an-ide"></a><a href="#developing-the-invest-ui-application-or-core-library-with-an-ide" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Developing the Invest UI (application or core library) with an IDE</h2>
+<p>As with Java, start by opening the <code>invest-js</code> directory as a project. We will use Visual Studio Code for this guide. Use File &gt; Open... then select the <code>invest-js</code> directory.</p>
+<p>You can think of the Invest JS code as being three separate areas. One is a set of libraries, another the application and then a set of UI plugins. The application and the plugins depend on the libraries.</p>
+<p>When you do any development on the UI you'll probably want to run the application:</p>
+<pre><code class="hljs css languages- bash">yarn dev:app
+</code></pre>
+<p>Visiting <a href="http://localhost:3000">http://localhost:3000</a> will present you with a live version of your in-development Invest.</p>
+<p>You may also want to have any changes in the libraries reflected in the application and any plugins you are developing.</p>
+<pre><code class="hljs css languages- bash">yarn dev:libs
+</code></pre>
+<p>Making (and saving) changes to the libs or the main app will cause an update/refresh in the browser.</p>
+<p><strong>Gotcha:</strong> If you change the types, e.g. classes, interfaces or exports, of a project you might find that this is not reflected properly. That is, you encounter errors in cases where the new changes are not seen. If this is the case stop (<code>ctrl+c</code>) and restart with the above commands. This seems to be a limitation in the type processing in the build system.</p>
+<p>The above commands will not run any UI plugins in development mode, see <a href="invest/ui">UI development</a> for more information. In short, to develop the Invest UI plugins in <code>invest-js/plugins</code> you should first run the above commands then:</p>
+<pre><code class="hljs css languages- bash"><span class="hljs-built_in">cd</span> invest-js/plugins/[plugin-name]
+yarn develop
+</code></pre>
+<p>This will run a plugin which you can access from <a href="http://localhost:3001">http://localhost:3001</a> or via the <a href="invest/ui/live-development-plugin">Live Development Plugin</a>. Note that you can only have one live development plugin at once (unless you start modifying the port on which the development versions are published).</p>
+<h2><a class="anchor" aria-hidden="true" id="developing-ui-plugins-without-running-invest-in-development-mode"></a><a href="#developing-ui-plugins-without-running-invest-in-development-mode" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Developing UI plugins without running Invest in development mode</h2>
+<p>You can develop UI plugins without running the live development version of Invest (as detailed above). When you run the <code>bulid-with-ui.sh</code> command above the UI components are build and copied into the various Java plugins. For example, the <code>invest-plugin-ui-app</code> Java project contains the build Invest application, and the <code>invest-plugin-ui-devaction</code> Java project will contain the <code>invest-js/plugin/invest-ui-devaction</code> UI plugin.</p>
+<p>By running <code>build-with-ui</code> and then adding these plugins to the classpath when you run <code>invest-server-app</code> as above you will have a complete Invest application, with the UI modules already built inside your IDE. You don't then need to run <code>yarn dev:app</code>.</p>
+<p>You can run just the <code>invest-server-app</code> form your java IDE and then develop your UI plugin, visit <a href="http://localhost:8080">http://localhost:8080</a> to see the Invest UI.</p>
+<h2><a class="anchor" aria-hidden="true" id="advanced-developing-your-own-ui-plugins-linked-to-live-invest"></a><a href="#advanced-developing-your-own-ui-plugins-linked-to-live-invest" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Advanced: Developing your own UI plugins linked to live Invest</h2>
+<p>If you are developing a third party Invest UI plugin you likely will not be placing it inside the <code>invest-js</code> repository. However you might want to use the development version of <code>invest-js</code> (as you did with when you ran <code>yarn dev:libs</code> above).</p>
+<p>Yarn can link your plugin directly to the development version of <code>invest-js</code> on your system. First we tell yarn about our projects:</p>
+<pre><code class="hljs css languages- bash"><span class="hljs-built_in">cd</span> invest-js
+yarn link:libs
+</code></pre>
+<p>Now goto you plugin directory, where your <code>package.json</code> will declare a dependency on say <code>invest-plugin</code>.</p>
+<pre><code class="hljs css languages- bash"><span class="hljs-built_in">cd</span> my-new-plugin
+yarn link
+</code></pre>
+<p>Yarn will report that it is using <code>invest-plugin</code> locally. In your <code>node_modules</code> you'll see that the <code>invest-plugin</code> is now a symlink to your development <code>invest-js/invest-plugin</code> directory.</p>
+<p>Finally run <code>yarn dev:libs</code> from the <code>invest-js</code> as below</p>
+<h2><a class="anchor" aria-hidden="true" id="next-steps"></a><a href="#next-steps" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Next steps</h2>
+<p>You are now ready to build either a UI or Server plugin...</p>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/dev.reading-list.html">← Reading List</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Sitemap</h5><a href="/docs/about.html">About</a><a href="/docs/server.index.html">Server</a><a href="/docs/ui.index.html">UI</a></div><div><h5>Resources</h5><a href="https://github.com/commitd/invest">Source</a></div></section><section class="copyright">Copyright © 2018 Committed</section></footer></div></body></html>

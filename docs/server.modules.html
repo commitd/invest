@@ -1,0 +1,39 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>Invest Server Modules · Invest</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="The Invest Java Server is a Maven project, which compromises multiple modules:"/><meta name="docsearch:language" content="en"/><meta property="og:title" content="Invest Server Modules · Invest"/><meta property="og:type" content="website"/><meta property="og:url" content="https://commitd.github.com/invest/index.html"/><meta property="og:description" content="The Invest Java Server is a Maven project, which compromises multiple modules:"/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/undefined"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><link rel="stylesheet" href="/css/main.css"/></head><body class="sideNavVisible"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/"><h2 class="headerTitle">Invest</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class=""><a href="/docs/about.html" target="_self">About</a></li><li class=""><a href="/docs/dev.reading-list.html" target="_self">Development</a></li><li class=""><a href="/docs/ui.index.html" target="_self">UI</a></li><li class="siteNavGroupActive"><a href="/docs/server.index.html" target="_self">Server</a></li><li class=""><a href="https://github.com/commitd/invest-server" target="_self">Server Source</a></li><li class=""><a href="https://github.com/commitd/invest-ui" target="_self">UI Source</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><i></i></div><h2><i>›</i><span>Concepts</span></h2></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle">Introduction</h3><ul><li class="navListItem"><a class="navItem" href="/docs/server.index.html">Invest Server</a></li><li class="navListItem"><a class="navItem" href="/docs/server.faq.html">FAQ</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Concepts</h3><ul><li class="navListItem navListItemActive"><a class="navItem" href="/docs/server.modules.html">Invest Server Modules</a></li><li class="navListItem"><a class="navItem" href="/docs/server.extension-points.html">Invest Server Extension Points</a></li><li class="navListItem"><a class="navItem" href="/docs/server.data.html">Data</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Developing extensions</h3><ul><li class="navListItem"><a class="navItem" href="/docs/server.dev-maven.html">Developing extension with Maven</a></li><li class="navListItem"><a class="navItem" href="/docs/server.dev-data-extension.html">Developing Data extension</a></li><li class="navListItem"><a class="navItem" href="/docs/server.dev-service-extension.html">Developing Service extensions</a></li><li class="navListItem"><a class="navItem" href="/docs/server.dev-graphql-extension.html">Developing GraphQL extension</a></li><li class="navListItem"><a class="navItem" href="/docs/server.dev-api-extension.html">Developing API extension</a></li><li class="navListItem"><a class="navItem" href="/docs/server.dev-ui-extension.html">Developing UI extensions with Java</a></li></ul></div></div></section></div><script>
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              const headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                if (event.target.tagName === 'A') {
+                  document.body.classList.remove('tocActive');
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1 class="postHeaderTitle">Invest Server Modules</h1></header><article><div><span><p>The Invest Java Server is a Maven project, which compromises multiple modules:</p>
+<ul>
+<li><code>invest-dependencies</code> is a BOM (Bill of Materials) which specifies the depenendencies for the rest of the project, and for all plugins. Where possible you should use this in your plugins to avoid including dependencies with different versions, thereby creating conflicts.</li>
+<li><code>invest-common</code> is a library of code which is common to both the server and plugins.</li>
+<li><code>invest-server</code> is a multi-module project, described below, which contains the Invest applications server.</li>
+<li><code>invest-plugin</code> is a library on which all plugins should depend.</li>
+<li><code>invest-plugins</code> contains a set of Invest Plugins which are largely core plugins required to offer standard functionality.</li>
+</ul>
+<p>The <code>invest-server</code> module compromises:</p>
+<ul>
+<li><code>invest-server-core</code> a set of code which which is shared by server modules, but not with plugins.</li>
+<li><code>invest-server-app</code> the runnable application and its configuration.</li>
+<li><code>invest-server-data</code> a plugin which provides the data services to the application.</li>
+<li><code>invest-server-libs</code> bundles a set of third party library dependencies (so that other plugins don't have too, thus keeping size of individual plugins down)</li>
+</ul>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/server.faq.html">← FAQ</a><a class="docs-next button" href="/docs/server.extension-points.html">Invest Server Extension Points →</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Sitemap</h5><a href="/docs/about.html">About</a><a href="/docs/server.index.html">Server</a><a href="/docs/ui.index.html">UI</a></div><div><h5>Resources</h5><a href="https://github.com/commitd/invest">Source</a></div></section><section class="copyright">Copyright © 2018 Committed</section></footer></div></body></html>

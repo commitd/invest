@@ -1,0 +1,130 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>Developing GraphQL extension · Invest</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="Under Invest, GraphQL is intended as the primary interaction mechanism between the UI (or other API consumer) and the server. "/><meta name="docsearch:language" content="en"/><meta property="og:title" content="Developing GraphQL extension · Invest"/><meta property="og:type" content="website"/><meta property="og:url" content="https://commitd.github.com/invest/index.html"/><meta property="og:description" content="Under Invest, GraphQL is intended as the primary interaction mechanism between the UI (or other API consumer) and the server. "/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/undefined"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><link rel="stylesheet" href="/css/main.css"/></head><body class="sideNavVisible"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/"><h2 class="headerTitle">Invest</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class=""><a href="/docs/about.html" target="_self">About</a></li><li class=""><a href="/docs/dev.reading-list.html" target="_self">Development</a></li><li class=""><a href="/docs/ui.index.html" target="_self">UI</a></li><li class="siteNavGroupActive"><a href="/docs/server.index.html" target="_self">Server</a></li><li class=""><a href="https://github.com/commitd/invest-server" target="_self">Server Source</a></li><li class=""><a href="https://github.com/commitd/invest-ui" target="_self">UI Source</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><i></i></div><h2><i>›</i><span>Developing extensions</span></h2></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle">Introduction</h3><ul><li class="navListItem"><a class="navItem" href="/docs/server.index.html">Invest Server</a></li><li class="navListItem"><a class="navItem" href="/docs/server.faq.html">FAQ</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Concepts</h3><ul><li class="navListItem"><a class="navItem" href="/docs/server.modules.html">Invest Server Modules</a></li><li class="navListItem"><a class="navItem" href="/docs/server.extension-points.html">Invest Server Extension Points</a></li><li class="navListItem"><a class="navItem" href="/docs/server.data.html">Data</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Developing extensions</h3><ul><li class="navListItem"><a class="navItem" href="/docs/server.dev-maven.html">Developing extension with Maven</a></li><li class="navListItem"><a class="navItem" href="/docs/server.dev-data-extension.html">Developing Data extension</a></li><li class="navListItem"><a class="navItem" href="/docs/server.dev-service-extension.html">Developing Service extensions</a></li><li class="navListItem navListItemActive"><a class="navItem" href="/docs/server.dev-graphql-extension.html">Developing GraphQL extension</a></li><li class="navListItem"><a class="navItem" href="/docs/server.dev-api-extension.html">Developing API extension</a></li><li class="navListItem"><a class="navItem" href="/docs/server.dev-ui-extension.html">Developing UI extensions with Java</a></li></ul></div></div></section></div><script>
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              const headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                if (event.target.tagName === 'A') {
+                  document.body.classList.remove('tocActive');
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1 class="postHeaderTitle">Developing GraphQL extension</h1></header><article><div><span><p>Under Invest, GraphQL is intended as the primary interaction mechanism between the UI (or other API consumer) and the server.</p>
+<p>Assuming you have the plugins available, Invest will provide the <code>/graphql</code> endpoint preconfigured along with the <a href="https://github.com/graphql/graphiql">GraphiQL</a> client as a Invest plugin.</p>
+<p>Invest Server uses the <a href="https://github.com/leangen/graphql-spqr">GraphQL-SPQR</a> as its implementation.</p>
+<h2><a class="anchor" aria-hidden="true" id="create-a-project"></a><a href="#create-a-project" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Create a project</h2>
+<p>Create a Maven project, <a href="server.dev-maven.html">as a Invest plugin</a>, called <code>invest-gql-hello</code>.</p>
+<p>We create a class <code>HelloGraphQlExtension</code> which is the extension definition under <code>io.committed.invest.plugins.hellogql</code>:</p>
+<pre><code class="hljs css languages- java"><span class="hljs-keyword">package</span> io.committed.invest.plugins.hellogql;
+
+<span class="hljs-keyword">import</span> org.springframework.context.annotation.Configuration;
+
+<span class="hljs-keyword">import</span> io.committed.invest.extensions.InvestUiExtension;
+
+<span class="hljs-meta">@Configuration</span>
+<span class="hljs-meta">@ComponentScan</span>
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">HelloGraphQlExtension</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">InvestGraphQlExtension</span> </span>{
+
+  <span class="hljs-meta">@Override</span>
+  <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">getId</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">return</span> <span class="hljs-string">"invest-gql-hello"</span>;
+  }
+
+}
+</code></pre>
+<p>As with all plugins we create the <code>spring.factories</code> file under <code>src/main/reources/META-INF/</code> so that Spring can find the extension:</p>
+<pre><code class="hljs">org<span class="hljs-selector-class">.springframework</span><span class="hljs-selector-class">.boot</span><span class="hljs-selector-class">.autoconfigure</span><span class="hljs-selector-class">.EnableAutoConfiguration</span>=io<span class="hljs-selector-class">.committed</span><span class="hljs-selector-class">.invest</span><span class="hljs-selector-class">.plugins</span><span class="hljs-selector-class">.hellogql</span><span class="hljs-selector-class">.HelloGraphQlExtension</span>
+</code></pre>
+<p>This is a GraphQl plugin but it does not offer any GraphQL endpoints.</p>
+<h2><a class="anchor" aria-hidden="true" id="creating-graphql-queries-and-mutations"></a><a href="#creating-graphql-queries-and-mutations" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Creating GraphQL queries and mutations</h2>
+<p>In Invest a GraphQL endpoint is declared through by an <code>@InvestGraphQlService</code>, which is a Spring component stereotype like <code>@Service</code>. As a result you can, and likely will need to, autowire any Spring beans into your GraphQL Service.</p>
+<p>GraphQL-SPQR uses Java Annotations to create the GraphQL schema.</p>
+<pre><code class="hljs css languages- java">
+<span class="hljs-meta">@InvestGraphQlService</span>
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">GqlHelloService</span> </span>{
+
+    <span class="hljs-meta">@GraphQLQuery</span>(name = <span class="hljs-string">"search"</span>,  description = <span class="hljs-string">"Find a document by its content"</span>)
+    <span class="hljs-function"><span class="hljs-keyword">public</span> List&lt;Document&gt; <span class="hljs-title">searchByQuery</span><span class="hljs-params">(@GraphQLArgument(name = <span class="hljs-string">"query"</span>)</span> String query) </span>{
+      ...
+    }
+
+} 
+
+<span class="hljs-comment">// where</span>
+
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Document</span> </span>{
+
+    <span class="hljs-keyword">private</span> String title;
+    <span class="hljs-keyword">private</span> String author;
+    <span class="hljs-keyword">private</span> String content;
+
+    ... 
+}
+
+</code></pre>
+<p>This will result in a GraphQL schema such as:</p>
+<pre><code class="hljs css languages- js">
+query {
+  search(query: <span class="hljs-built_in">String</span>!) {
+      <span class="hljs-attr">author</span>: <span class="hljs-built_in">String</span>
+      content: <span class="hljs-built_in">String</span>
+      title: <span class="hljs-built_in">String</span>
+  }
+
+}
+
+</code></pre>
+<p>Refer to SPQR for more information.</p>
+<h2><a class="anchor" aria-hidden="true" id="nesting-graphql"></a><a href="#nesting-graphql" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Nesting GraphQL</h2>
+<p>The powerful aspect of SPQR and GraphQL is addition of function into the Schema. Support we want to add a document's size as an output on the schema? With GraphQL we can extend the Document type to add that function.</p>
+<pre><code class="hljs css languages- java"><span class="hljs-meta">@InvestGraphQlService</span>
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">GqlExtraFunctionsOnDocumentService</span> </span>{
+
+    <span class="hljs-meta">@GraphQLQuery</span>(name = <span class="hljs-string">"size"</span>,  description = <span class="hljs-string">"Size of the document"</span>)
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> <span class="hljs-title">getDocumentSize</span><span class="hljs-params">(@GraphQLContext Document document)</span> </span>{
+      <span class="hljs-keyword">return</span> document.getContent().length();
+    }
+
+} 
+</code></pre>
+<p>The key function here is the <code>@GraphQLContext</code> which SQPR uses indicates that this method should be added to whenever <code>Document</code> is seen in the schema.</p>
+<p>Now the schema will become:</p>
+<pre><code class="hljs css languages- js">
+query {
+  search(query: <span class="hljs-built_in">String</span>!) {
+      <span class="hljs-attr">author</span>: <span class="hljs-built_in">String</span>
+      content: <span class="hljs-built_in">String</span>
+      title: <span class="hljs-built_in">String</span>
+      size: Int
+  }
+
+}
+
+</code></pre>
+<p>From the caller's perspective the document looks like it has a size, whereas this is purely calcualted. Whilst this is a trival example, the size function could easily be something more complex, just a generated short summary, or list of keywords, etc.</p>
+<h2><a class="anchor" aria-hidden="true" id="accessing-contextual-information"></a><a href="#accessing-contextual-information" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Accessing contextual information</h2>
+<p>You can use <code>@GraphQLRootContext</code> to get the 'root context' in which the query is running. That is provided by Invest at the time the particular GraphQL operation is executed and is of type <code>io.committed.invest.core.graphql.Context</code>. It contains for example the Spring <code>WebSession</code> and the <code>Authentication</code>.</p>
+<p>Due to the way GraphQL is executed (running in an multi threaded manner) the Spring Reactive annotations do not work on <code>@InvestGraphQlService</code> methods (ie you can't use <code>@PreAuthorize</code>). Thus the root context provides access to those functions.</p>
+<p><em>This may change in future when the API for SPQR and Spring Boot are stabilised</em></p>
+<h2><a class="anchor" aria-hidden="true" id="thinking-in-graphql"></a><a href="#thinking-in-graphql" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Thinking in GraphQL</h2>
+<p>Here are some pointers for working with GraphQL:</p>
+<ul>
+<li>Where possible, avoid adding operations at the top (root query) unless they really belong there as <code>search</code> does above. For example, we could have created <code>getDocumentSize</code> alongside <code>search</code> but its far more powerful to have it placed onto a Document.</li>
+<li>When implementing a operation consider where else it could be used for standardisation. For example should <code>search</code> have a <code>size</code> like document does?</li>
+<li>GraphQL supports mandatory and optional arguments, <code>search</code> could have pagination (page / size) support here.</li>
+<li>Often rather than returning something directly (eg <code>search</code> directly returns an array of <code>Documents</code>) it is better to return an intermediate object such as <code>SearchResults</code>. SearchResults can then offer additional functions itself, but it can be extended by others.</li>
+<li>Create a Maven project which has all your basic results from GraphQL operations, for example the <code>Document</code> class above. These can be classes or interfaces. By moving them into a common project others can extend them easily.</li>
+</ul>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/server.dev-service-extension.html">← Developing Service extensions</a><a class="docs-next button" href="/docs/server.dev-api-extension.html">Developing API extension →</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Sitemap</h5><a href="/docs/about.html">About</a><a href="/docs/server.index.html">Server</a><a href="/docs/ui.index.html">UI</a></div><div><h5>Resources</h5><a href="https://github.com/commitd/invest">Source</a></div></section><section class="copyright">Copyright © 2018 Committed</section></footer></div></body></html>

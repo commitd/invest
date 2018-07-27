@@ -1,0 +1,144 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>Developing Service extensions · Invest</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="A service extension is the most generic in Invest. It is effectively one or more Spring `@Service` / `@Component` which provide reusable functionality to the other plugins."/><meta name="docsearch:language" content="en"/><meta property="og:title" content="Developing Service extensions · Invest"/><meta property="og:type" content="website"/><meta property="og:url" content="https://commitd.github.com/invest/index.html"/><meta property="og:description" content="A service extension is the most generic in Invest. It is effectively one or more Spring `@Service` / `@Component` which provide reusable functionality to the other plugins."/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/undefined"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><link rel="stylesheet" href="/css/main.css"/></head><body class="sideNavVisible"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/"><h2 class="headerTitle">Invest</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class=""><a href="/docs/about.html" target="_self">About</a></li><li class=""><a href="/docs/dev.reading-list.html" target="_self">Development</a></li><li class=""><a href="/docs/ui.index.html" target="_self">UI</a></li><li class="siteNavGroupActive"><a href="/docs/server.index.html" target="_self">Server</a></li><li class=""><a href="https://github.com/commitd/invest-server" target="_self">Server Source</a></li><li class=""><a href="https://github.com/commitd/invest-ui" target="_self">UI Source</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><i></i></div><h2><i>›</i><span>Developing extensions</span></h2></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle">Introduction</h3><ul><li class="navListItem"><a class="navItem" href="/docs/server.index.html">Invest Server</a></li><li class="navListItem"><a class="navItem" href="/docs/server.faq.html">FAQ</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Concepts</h3><ul><li class="navListItem"><a class="navItem" href="/docs/server.modules.html">Invest Server Modules</a></li><li class="navListItem"><a class="navItem" href="/docs/server.extension-points.html">Invest Server Extension Points</a></li><li class="navListItem"><a class="navItem" href="/docs/server.data.html">Data</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Developing extensions</h3><ul><li class="navListItem"><a class="navItem" href="/docs/server.dev-maven.html">Developing extension with Maven</a></li><li class="navListItem"><a class="navItem" href="/docs/server.dev-data-extension.html">Developing Data extension</a></li><li class="navListItem navListItemActive"><a class="navItem" href="/docs/server.dev-service-extension.html">Developing Service extensions</a></li><li class="navListItem"><a class="navItem" href="/docs/server.dev-graphql-extension.html">Developing GraphQL extension</a></li><li class="navListItem"><a class="navItem" href="/docs/server.dev-api-extension.html">Developing API extension</a></li><li class="navListItem"><a class="navItem" href="/docs/server.dev-ui-extension.html">Developing UI extensions with Java</a></li></ul></div></div></section></div><script>
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              const headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                if (event.target.tagName === 'A') {
+                  document.body.classList.remove('tocActive');
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1 class="postHeaderTitle">Developing Service extensions</h1></header><article><div><span><p>A service extension is the most generic in Invest. It is effectively one or more Spring <code>@Service</code> / <code>@Component</code> which provide reusable functionality to the other plugins.</p>
+<p>It is probably unusual to implement a service plugin, as most plugins will be either to add data, ui or graphql. In particular most services are likely offered to the UI via a GraphQL endpoint.</p>
+<p>Thus if you are implementing a service it is likely because you want to offer multiple implementations of that service. As such we recommend you create two Maven projects.</p>
+<ul>
+<li>A Service interface (as a Java interface) which other projects can depend upon.</li>
+<li>The default service implementation and invest plugin which implements your Service interface.</li>
+</ul>
+<p>We'll use a typically <code>toUpperCase</code> example in the below. Obviously this functionality would not be sufficiently complex to warrant building a service around. The types of functionality that might be offered as a service would be algorithims (data transformation, data clustering), or access to a third party API such as for translation.</p>
+<h2><a class="anchor" aria-hidden="true" id="the-service-interface"></a><a href="#the-service-interface" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>The Service Interface</h2>
+<p>Create a Maven project called <code>invest-service-myserviceinterface</code>.</p>
+<p>Within this lets create a simple 'toUpperCase' service,</p>
+<pre><code class="hljs css languages- java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">interface</span> <span class="hljs-title">CaseChanger</span> </span>{
+
+    <span class="hljs-function">String <span class="hljs-title">changeCase</span><span class="hljs-params">(String text)</span></span>;
+}
+</code></pre>
+<p>That's it.</p>
+<h2><a class="anchor" aria-hidden="true" id="implementing-the-service-plugin"></a><a href="#implementing-the-service-plugin" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Implementing the Service plugin</h2>
+<p>Create a second Maven project, this time <a href="./dev-maven">as a Invest plugin</a>, called <code>invest-service-uppercasechanger</code>. This should include the <code>invest-service-casechanger-interface</code>.</p>
+<p>We create a class <code>UpperCaseChangerExtension</code> which is the extension definition under <code>io.committed.invest.plugins.casechanger</code>:</p>
+<pre><code class="hljs css languages- java"><span class="hljs-keyword">package</span> io.committed.invest.plugins.casechanger;
+
+<span class="hljs-keyword">import</span> org.springframework.context.annotation.Configuration;
+
+<span class="hljs-keyword">import</span> io.committed.invest.extensions.InvestUiExtension;
+
+<span class="hljs-meta">@Configuration</span>
+<span class="hljs-meta">@ComponentScan</span>
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">UpperCaseChangerExtension</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">InvestServiceExtension</span> </span>{
+
+  <span class="hljs-meta">@Override</span>
+  <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">getId</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">return</span> <span class="hljs-string">"invest-service-casechanger"</span>;
+  }
+
+}
+</code></pre>
+<p>As with all plugins we create the <code>spring.factories</code> file under <code>src/main/reources/META-INF/</code> so that Spring can find out extension:</p>
+<pre><code class="hljs css languages- ini">org.springframework.boot.autoconfigure.EnableAutoConfiguration=io.committed.invest.plugins.casechanger.UpperCaseChangerExtension
+</code></pre>
+<p>And alongside that our implementation. Note our implementation will be found automatically by Spring via the <code>@ComponentScan</code> functionality.</p>
+<pre><code class="hljs css languages- java"><span class="hljs-meta">@Service</span>
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">UpperCaseChangerExtension</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">CaseChanger</span> </span>{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">changeCase</span><span class="hljs-params">(String text)</span> </span>{
+        <span class="hljs-keyword">return</span> text == <span class="hljs-keyword">null</span> ? <span class="hljs-keyword">null</span> : text.toUpperCase(); 
+    }
+}
+</code></pre>
+<p>This will now build into a Invest JAR plugin to be used in other applications.</p>
+<h2><a class="anchor" aria-hidden="true" id="accessing-the-service-api-in-another-plugin"></a><a href="#accessing-the-service-api-in-another-plugin" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Accessing the Service API in another plugin</h2>
+<p>In another plugin (eg a GraphQL plugin) you will want to access this <code>CaseChanger</code> functionality. In that plugin, you should include the <code>invest-service-myserviceinterface</code> as a Maven dependency. Then, as in standard Spring, you should autowire this interface.</p>
+<pre><code class="hljs css languages- java"><span class="hljs-meta">@InvestGraphQlService</span> 
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ExampleGraphQL</span> </span>{
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> CaseChanger caseChanger;
+
+    <span class="hljs-meta">@Autowired</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">ExampleGraphQL</span><span class="hljs-params">(CaseChanger caseChanger)</span> </span>{
+        <span class="hljs-keyword">this</span>.caseChanger = caseChanger;
+    }
+
+    ...
+
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">hello</span><span class="hljs-params">(String name)</span> </span>{
+        <span class="hljs-keyword">return</span> <span class="hljs-string">"Hello "</span> + caseChanger.changeCase(name);
+    }
+
+}
+</code></pre>
+<p>Though this is as you would normally write a Spring Boot application, it worth noting some additional consideration due to the plugin nature of Invest.</p>
+<ul>
+<li>What happens if no implementation is provided? Spring will currently exit, saying that an implementaiton is required.</li>
+<li>What happens if multiple implementations are provided? Spring will error saying it is not sure which to CaseChanger to auto wire.</li>
+</ul>
+<p>The correct solution to this behaviour will depend on your service. For example, it may be correct that one and only one implementaiton is available - thus it is up to the person running Invest to correctly specify a single plugin which offers the <code>CaseChanger</code>.</p>
+<p>If not then you have several options, depending on where you'd like to fix this problem. Spring's traditional approaches to this are the <code>@Primary</code> to a specify a specific implementation, <code>@Qualifier</code> to name a bean specifically, or use <code>@ConditionalOnMissingBean</code> to ensure there is a single bean of a single type. In some sense these work well when you have a fixed set of known plugins.</p>
+<p>As such as we'd recommend an approach of either using a non-required autowired list which you can pick the best from:</p>
+<pre><code class="hljs css languages- java"><span class="hljs-meta">@InvestGraphQlService</span> 
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ExampleGraphQLWithList</span> </span>{
+
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> CaseChanger caseChanger;
+
+    <span class="hljs-meta">@Autowired</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">ExampleGraphQLWithList</span><span class="hljs-params">(@Autowired(required=<span class="hljs-keyword">false</span>)</span> List&lt;CaseChanger&gt; caseChangers) </span>{
+        <span class="hljs-comment">// If we don't have caseChangers when we set to null</span>
+        <span class="hljs-comment">// A nicer approach would be to have a default implementation here so caseChangers is never null</span>
+        <span class="hljs-comment">// If we have one we can pick the best. We can use Spring @Ordered to define the best, or we could have </span>
+        <span class="hljs-comment">// other functions on the CaseChanger interface to help us decided (perhaps one is performance for</span>
+        <span class="hljs-comment">// long strings)</span>
+        <span class="hljs-keyword">this</span>.caseChanger = caseChangers == <span class="hljs-keyword">null</span> || caseChangers.isEmpty() ? <span class="hljs-keyword">null</span> : caseChangers.get(<span class="hljs-number">0</span>);
+    }
+
+       <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">hello</span><span class="hljs-params">(String name)</span> </span>{
+        String changed = caseChanger == <span class="hljs-keyword">null</span> ? name : caseChanger.changeCase(name);
+        <span class="hljs-keyword">return</span> <span class="hljs-string">"Hello "</span> + changed;
+    }
+</code></pre>
+<p>Or we can use another configuration bean to help simplify the configuration. This can be used with the previous <code>ExampleGraphQL</code> unchanged:</p>
+<pre><code class="hljs css languages- java"><span class="hljs-meta">@Configuration</span>
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CaseChangerHelperConfig</span> </span>{
+
+    <span class="hljs-meta">@Bean</span>
+    <span class="hljs-comment">// Annotate a primary so it know</span>
+    <span class="hljs-meta">@Primary</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> CaseChanger <span class="hljs-title">bestCaseChanger</span><span class="hljs-params">(List&lt;CaseChanger&gt; caseChangers)</span> </span>{
+        <span class="hljs-comment">// Get the first... or use a smart approach</span>
+        <span class="hljs-comment">// Note we know there's one... beacuse it's defined below</span>
+        <span class="hljs-keyword">return</span> caseChangers.get(<span class="hljs-number">0</span>);
+    }
+
+    <span class="hljs-comment">// Ensure one caseChanger exists</span>
+    <span class="hljs-meta">@Bean</span>
+    <span class="hljs-meta">@ConditonalOnMissingBean</span>(CaseChanger.class)
+    <span class="hljs-function"><span class="hljs-keyword">public</span> CaseChanger <span class="hljs-title">doNothingCaseChanger</span><span class="hljs-params">()</span> </span>{
+        <span class="hljs-keyword">return</span> text -&gt; text;
+    }
+}
+</code></pre>
+<p>Though additonal classes to manage, the nice aspect of the <code>CaseChangerHelperConfig</code> is that is allows a specific resolution logic for your plugin, as well as a sensible default implementation.</p>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/server.dev-data-extension.html">← Developing Data extension</a><a class="docs-next button" href="/docs/server.dev-graphql-extension.html">Developing GraphQL extension →</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Sitemap</h5><a href="/docs/about.html">About</a><a href="/docs/server.index.html">Server</a><a href="/docs/ui.index.html">UI</a></div><div><h5>Resources</h5><a href="https://github.com/commitd/invest">Source</a></div></section><section class="copyright">Copyright © 2018 Committed</section></footer></div></body></html>

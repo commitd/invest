@@ -1,0 +1,159 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>Developing UI extensions with Java · Invest</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="This section discusses the UI from the perspective of it being a Invest Server plugin. The UI compromises a Web UI (JavaScript/TypeScript, HTML, etc) plus the Java code around that as a plugin. This section looks from the perspective of the Java plugin, with the web development angle covered in [UI development](ui.dev-ui-extension.html). We will use a simple `index.html` example here together with the `invest.js` script library. Typically plugins will have more complex UI development behind them, but this guide shows that need not be the case."/><meta name="docsearch:language" content="en"/><meta property="og:title" content="Developing UI extensions with Java · Invest"/><meta property="og:type" content="website"/><meta property="og:url" content="https://commitd.github.com/invest/index.html"/><meta property="og:description" content="This section discusses the UI from the perspective of it being a Invest Server plugin. The UI compromises a Web UI (JavaScript/TypeScript, HTML, etc) plus the Java code around that as a plugin. This section looks from the perspective of the Java plugin, with the web development angle covered in [UI development](ui.dev-ui-extension.html). We will use a simple `index.html` example here together with the `invest.js` script library. Typically plugins will have more complex UI development behind them, but this guide shows that need not be the case."/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/undefined"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><link rel="stylesheet" href="/css/main.css"/></head><body class="sideNavVisible"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/"><h2 class="headerTitle">Invest</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class=""><a href="/docs/about.html" target="_self">About</a></li><li class=""><a href="/docs/dev.reading-list.html" target="_self">Development</a></li><li class=""><a href="/docs/ui.index.html" target="_self">UI</a></li><li class="siteNavGroupActive"><a href="/docs/server.index.html" target="_self">Server</a></li><li class=""><a href="https://github.com/commitd/invest-server" target="_self">Server Source</a></li><li class=""><a href="https://github.com/commitd/invest-ui" target="_self">UI Source</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><i></i></div><h2><i>›</i><span>Developing extensions</span></h2></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle">Introduction</h3><ul><li class="navListItem"><a class="navItem" href="/docs/server.index.html">Invest Server</a></li><li class="navListItem"><a class="navItem" href="/docs/server.faq.html">FAQ</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Concepts</h3><ul><li class="navListItem"><a class="navItem" href="/docs/server.modules.html">Invest Server Modules</a></li><li class="navListItem"><a class="navItem" href="/docs/server.extension-points.html">Invest Server Extension Points</a></li><li class="navListItem"><a class="navItem" href="/docs/server.data.html">Data</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Developing extensions</h3><ul><li class="navListItem"><a class="navItem" href="/docs/server.dev-maven.html">Developing extension with Maven</a></li><li class="navListItem"><a class="navItem" href="/docs/server.dev-data-extension.html">Developing Data extension</a></li><li class="navListItem"><a class="navItem" href="/docs/server.dev-service-extension.html">Developing Service extensions</a></li><li class="navListItem"><a class="navItem" href="/docs/server.dev-graphql-extension.html">Developing GraphQL extension</a></li><li class="navListItem"><a class="navItem" href="/docs/server.dev-api-extension.html">Developing API extension</a></li><li class="navListItem navListItemActive"><a class="navItem" href="/docs/server.dev-ui-extension.html">Developing UI extensions with Java</a></li></ul></div></div></section></div><script>
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              const headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                if (event.target.tagName === 'A') {
+                  document.body.classList.remove('tocActive');
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1 class="postHeaderTitle">Developing UI extensions with Java</h1></header><article><div><span><p>This section discusses the UI from the perspective of it being a Invest Server plugin. The UI compromises a Web UI (JavaScript/TypeScript, HTML, etc) plus the Java code around that as a plugin. This section looks from the perspective of the Java plugin, with the web development angle covered in <a href="ui.dev-ui-extension.html">UI development</a>. We will use a simple <code>index.html</code> example here together with the <code>invest.js</code> script library. Typically plugins will have more complex UI development behind them, but this guide shows that need not be the case.</p>
+<p>First create a maven project called <code>invest-ui-myplugin</code> as per the <a href="server.dev-maven.html">Maven extension development guide</a>.</p>
+<h2><a class="anchor" aria-hidden="true" id="creating-a-basic-indexhtml-file"></a><a href="#creating-a-basic-indexhtml-file" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Creating a basic index.html file</h2>
+<p>Under <code>src/main/resources</code> we will create a directory, called <code>ui/invest-ui-plugin</code>. We recommend the convention <code>ui/</code> as a directory for all your Web UI files, and further subdirectory named uniquely (after you plugin). Firstly this helps other developers find your UI code and secondly it means that if you package multiple UI plugins together their files will not conflict.</p>
+<p>Under the <code>ui/invest-ui-myplugin</code> directory we'll create a simple <code>index.html</code>.</p>
+<pre><code class="hljs css languages- html"><span class="hljs-tag">&lt;<span class="hljs-name">html</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>An example of a very simple Invest plugin.<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span>
+</code></pre>
+<p>If you were to run this now in Invest, your UI would <strong>not</strong> be available, because we have yet to make Invest aware of this.</p>
+<h2><a class="anchor" aria-hidden="true" id="creating-the-plugin-definition"></a><a href="#creating-the-plugin-definition" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Creating the plugin definition</h2>
+<p>We create a new Java class in the package <code>io.committed.invest.plugins.myplugin</code> called <code>MyPluginUiExtension</code>. You can pick any package and class naming convension you wish (ie does not have to <code>io.committed</code> for example).</p>
+<p>This class should contain the following:</p>
+<pre><code class="hljs css languages- java"><span class="hljs-keyword">package</span> io.committed.invest.plugins.myplugin;
+
+<span class="hljs-keyword">import</span> org.springframework.context.annotation.Configuration;
+
+<span class="hljs-keyword">import</span> io.committed.invest.extensions.InvestUiExtension;
+
+<span class="hljs-meta">@Configuration</span>
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyPluginUiExtension</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">InvestUiExtension</span> </span>{
+
+  <span class="hljs-meta">@Override</span>
+  <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">getId</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">return</span> <span class="hljs-string">"invest-ui-myplugin"</span>;
+  }
+
+}
+</code></pre>
+<p>Points to note are:</p>
+<ul>
+<li><code>@Configuration</code> used to indicate this is a Spring configuration bean</li>
+<li><code>Implements</code> of the <code>InvestUiExtension</code>.</li>
+<li>Implementation of the getId of the UI extension. This id must be unique (amoungst all plugins in the Invest system) and it is used in several ways. Firstly to identify the plugin. In the case of UI extensions, it will form part of the URL where the plugin is hosted (eg <a href="http://example.com/ui/invest-ui-myplugin">http://example.com/ui/invest-ui-myplugin</a>) and by default Invest will look for the UI files (eg index.html) under the resource classspath (ie src/main/resources/) <code>ui/{id}/</code>.</li>
+</ul>
+<p>The final operation to enable Invest, or more correctly Spring, to find this plugin is to add a <code>spring.factories</code> file under <code>src/main/resources/META-INF</code>:</p>
+<pre><code class="hljs css languages- ini">org.springframework.boot.autoconfigure.EnableAutoConfiguration=io.committed.invest.plugins.myplugin.MyPluginUiExtension
+</code></pre>
+<p>Note that the <code>io.committed.invest.plugins.myplugin.MyPluginUiExtension</code> should be replaced with the fully qualified reference to the class above.</p>
+<h2><a class="anchor" aria-hidden="true" id="checking-function"></a><a href="#checking-function" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Checking function</h2>
+<p>If you run your plugin now you will see it displayed as an option in the Invest sidebar. Clicking on it should display the (very basic) html we entered above.</p>
+<h2><a class="anchor" aria-hidden="true" id="additional-methods-to-override-on-investuiextension"></a><a href="#additional-methods-to-override-on-investuiextension" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Additional methods to override on InvestUiExtension</h2>
+<p>There are several issues with the basic setup so far, one being that it is displayed in a friendly way to the user.</p>
+<p>We can change this. So far we have only provided the <code>getId()</code> function.</p>
+<pre><code class="hljs css languages- java">
+  <span class="hljs-comment">// A friendlier name to display to the user</span>
+  <span class="hljs-meta">@Override</span>
+  <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">getName</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">return</span> <span class="hljs-string">"My plugin"</span>;
+  }
+
+ <span class="hljs-comment">// Offer a short description</span>
+  <span class="hljs-meta">@Override</span>
+  <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">getDescription</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">return</span> <span class="hljs-string">"Example plugin based on the guide"</span>;
+  }
+
+  <span class="hljs-comment">// Pick a (fontawesome/semantic-ui) icon to display</span>
+  <span class="hljs-meta">@Override</span>
+  <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">getIcon</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">return</span> <span class="hljs-string">"browser"</span>;
+  }
+
+ <span class="hljs-comment">// Explicitly stati where to find out index.html and other HTML resources.</span>
+  <span class="hljs-meta">@Override</span>
+  <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">getStaticResourcePath</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">return</span> <span class="hljs-string">"/ui/invest-ui-myplugin"</span>
+  }
+</code></pre>
+<p>Note there are other methods which allow you more advanced options such as providing configuration settings to your UI, choosing with user group can see your plugins, etc.</p>
+<h2><a class="anchor" aria-hidden="true" id="javadone"></a><a href="#javadone" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Java...done</h2>
+<p>For many UI's this will be as much Java as is required. The work now is on the Javascript/Web side to achieve the functionality required.</p>
+<h2><a class="anchor" aria-hidden="true" id="offering-configuration-settings"></a><a href="#offering-configuration-settings" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Offering configuration settings</h2>
+<p>Many UI plugins will have settings. For example, how many results to display for search results. You could hard code these, but instead you can make use of Spring's YAML (or properties based) configuration.</p>
+<p>Creating a <code>@ConfigurationProperties</code> bean is covered in the <a href="server.extension-points.html">Extension points</a> section, and is standard Spring Boot.</p>
+<p>If we create a new configuration class <code>MyPluginSettings</code> as below, and add <code>@EnableConfigurationProperties(MyPluginSettings.class)</code> to our <code>MyPluginUiExtension</code> class above:</p>
+<pre><code class="hljs css languages- java">
+<span class="hljs-meta">@Configuration</span>
+<span class="hljs-meta">@ConfigurationProperties</span>(<span class="hljs-string">"invest.plugins.ui.myplugins"</span>)
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyPluginSettings</span> </span>{
+
+    <span class="hljs-comment">// Default value...</span>
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">int</span> maxResults = <span class="hljs-number">10</span>;
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> <span class="hljs-title">getmaxResults</span><span class="hljs-params">()</span> </span>{
+        <span class="hljs-keyword">return</span> maxResults;
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">setMaxResults</span><span class="hljs-params">(String maxResults)</span> </span>{
+        <span class="hljs-keyword">this</span>.maxResults = maxResults;
+    }
+}
+</code></pre>
+<p>We can create an <code>application.yaml</code> file (in the same directory as we run the invest-server.jar from) containing:</p>
+<pre><code class="hljs css languages- yaml"><span class="hljs-attr">invest:</span>
+<span class="hljs-attr">  plugins:</span>
+<span class="hljs-attr">    ui:</span>
+<span class="hljs-attr">      myplugins:</span>
+        <span class="hljs-comment"># Override default value...</span>
+<span class="hljs-attr">        maxResults:</span> <span class="hljs-number">50</span>
+</code></pre>
+<p>In order to automatically offer the the MyPluginSettings over GraphQL we can simply declare it in <code>MyPluginUiExtension</code>, as:</p>
+<pre><code class="hljs css languages- java">
+  <span class="hljs-meta">@Override</span>
+  <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">getSettings</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">return</span> MyPluginSettings.class;
+  }
+</code></pre>
+<p>YOu can now query via GraphQL in order to access these configuration settings.</p>
+<h2><a class="anchor" aria-hidden="true" id="roles"></a><a href="#roles" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Roles</h2>
+<p>If you have authentication enabled, then each user can have one or more roles (such as 'admin'). Some plugins should only be available to some user roles.</p>
+<p>To limit your plugin to be displayed to only those users with the correct role, use:</p>
+<pre><code class="hljs css languages- java">
+  <span class="hljs-meta">@Override</span>
+  <span class="hljs-function"><span class="hljs-keyword">public</span> Collection&lt;String&gt; <span class="hljs-title">getRoles</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">return</span> Array.asList(<span class="hljs-string">"ADMIN"</span>);
+  }
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" id="actions"></a><a href="#actions" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Actions</h2>
+<p>As discussed in the UI section, UI plugins communicate with one another via Intents (actions and payloads). The actions that a plugin supports are defined in Java.</p>
+<pre><code class="hljs css languages- java">  <span class="hljs-meta">@Override</span>
+  <span class="hljs-function"><span class="hljs-keyword">public</span> Collection&lt;ActionDefinition&gt; <span class="hljs-title">getActions</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">return</span> Arrays.asList(
+        SimpleActionDefinition.builder()
+            .action(<span class="hljs-string">"document.search"</span>)
+            .title(<span class="hljs-string">"Search"</span>)
+            .description(<span class="hljs-string">"Search for documents by content"</span>)
+            .build()
+    );
+
+  }
+</code></pre>
+<p><code>SimpleActionDefinition</code> provides a basic implementation and a builder to create actions.</p>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/server.dev-api-extension.html">← Developing API extension</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Sitemap</h5><a href="/docs/about.html">About</a><a href="/docs/server.index.html">Server</a><a href="/docs/ui.index.html">UI</a></div><div><h5>Resources</h5><a href="https://github.com/commitd/invest">Source</a></div></section><section class="copyright">Copyright © 2018 Committed</section></footer></div></body></html>

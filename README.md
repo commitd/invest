@@ -1,29 +1,33 @@
-# Invest
+# Invest Developer Site
 
-Modular framework for front and back end development
+If you have `serve` which you can install via:
 
-## About this repo
-
-This repository contains the project documentation, but it also has some scripts to get up get started:
-
-```bash
-# Clone this repository
-git clone https://github.com/commitd/invest.git
-
-# Run this command (it'll clone the other two projects for you)
-./setup.sh
-
-# Now go to the project you want:
-# cd invest-server
-# cd invest-ui
+```
+yarn global add serve
 ```
 
-## Where's the actual code? 
+Then just run:
 
-Quite right!
+```
+serve
+```
 
-This is a top level project repository, but the actual code is held under to separate repositories:
+If not, and you have Python,  you can serve this:
 
-* [Invest Java](https://jenkins.committed.software/job/invest-server) for backend server code
-* [Invest JS](https://jenkins.committed.software/job/invest-ui) for the frontend web code
+```
+# For Python 2:
+python -m SimpleHTTPServer 5000
+
+# For Python 3:
+python3 -m http.server 5000
+```
+
+Either way you can view the documentation in your local browser at http://localhost:5000
+
+```
+open http://localhost:5000
+```
+
+
+
 

@@ -1,0 +1,331 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>Developing UI modules · Invest</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="This section discusses the UI as being hosted served directly from the file system by Invest, specifically the Invest Ui Host plugin.  Here we will discuss the process from the Web perspective in detail, assuming a modern web development stack based on create-react-app. "/><meta name="docsearch:language" content="en"/><meta property="og:title" content="Developing UI modules · Invest"/><meta property="og:type" content="website"/><meta property="og:url" content="https://commitd.github.com/invest/index.html"/><meta property="og:description" content="This section discusses the UI as being hosted served directly from the file system by Invest, specifically the Invest Ui Host plugin.  Here we will discuss the process from the Web perspective in detail, assuming a modern web development stack based on create-react-app. "/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/undefined"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><link rel="stylesheet" href="/css/main.css"/></head><body class="sideNavVisible"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/"><h2 class="headerTitle">Invest</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class=""><a href="/docs/about.html" target="_self">About</a></li><li class=""><a href="/docs/dev.reading-list.html" target="_self">Development</a></li><li class="siteNavGroupActive"><a href="/docs/ui.index.html" target="_self">UI</a></li><li class=""><a href="/docs/server.index.html" target="_self">Server</a></li><li class=""><a href="https://github.com/commitd/invest-server" target="_self">Server Source</a></li><li class=""><a href="https://github.com/commitd/invest-ui" target="_self">UI Source</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><i></i></div><h2><i>›</i><span>Developing UIs</span></h2></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle">Introduction</h3><ul><li class="navListItem"><a class="navItem" href="/docs/ui.index.html">Invest UI</a></li><li class="navListItem"><a class="navItem" href="/docs/ui.faq.html">FAQ</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Concepts</h3><ul><li class="navListItem"><a class="navItem" href="/docs/ui.ux.html">User interface and experience</a></li><li class="navListItem"><a class="navItem" href="/docs/ui.technologies.html">Invest UI Technologies</a></li><li class="navListItem"><a class="navItem" href="/docs/ui.modules.html">Invest UI Modules</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Design</h3><ul><li class="navListItem"><a class="navItem" href="/docs/ui.system-comms.html">System design: Communications</a></li><li class="navListItem"><a class="navItem" href="/docs/ui.system-outer.html">System design: Outer frame</a></li><li class="navListItem"><a class="navItem" href="/docs/ui.system-plugin.html">System design: Plugin frame</a></li><li class="navListItem"><a class="navItem" href="/docs/ui.system-url.html">System design: URL</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Developing UIs</h3><ul><li class="navListItem navListItemActive"><a class="navItem" href="/docs/ui.dev-ui-extension.html">Developing UI modules</a></li><li class="navListItem"><a class="navItem" href="/docs/ui.dev-app-module.html">Advanced: Developing a new main application frontend</a></li><li class="navListItem"><a class="navItem" href="/docs/ui.dev-core-module.html">Advanced: Developing a core module</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Support</h3><ul><li class="navListItem"><a class="navItem" href="/docs/ui.live-development-plugin.html">Live development plugin</a></li><li class="navListItem"><a class="navItem" href="/docs/ui.action-development-plugin.html">Action development plugin</a></li></ul></div></div></section></div><script>
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              const headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                if (event.target.tagName === 'A') {
+                  document.body.classList.remove('tocActive');
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1 class="postHeaderTitle">Developing UI modules</h1></header><article><div><span><p>This section discusses the UI as being hosted served directly from the file system by Invest, specifically the Invest Ui Host plugin.  Here we will discuss the process from the Web perspective in detail, assuming a modern web development stack based on create-react-app.</p>
+<p>In its simplest form an UI extension need  meet only two conditions. It must have:</p>
+<ul>
+<li>An <code>index.html</code> which will be the initial file displayed when the plugin is viewed</li>
+<li>An <code>invest.json</code> which defines some metadata about the plugin.</li>
+</ul>
+<p>Rather than use the file system hosting, you may also host the UI through its own Java module which is covered <a href="server.dev-ui-extension.html">elsewhere</a>. That example uses a very simple file based <code>index.html</code> with <code>script</code> tags to illustrate the process. If you are developing UI component you should read both, but perhaps start with the one that corresponds to your web development approach.</p>
+<h2><a class="anchor" aria-hidden="true" id="options-for-create-a-plugin"></a><a href="#options-for-create-a-plugin" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Options for create a plugin</h2>
+<p>You can create the <code>index.html</code> in any way. It has no prescribed format or content.</p>
+<p>We'd recommend using <code>create-react-app</code> and specifically the Typescript variant <a href="https://github.com/Microsoft/TypeScript-React-Starter">create-react-ts</a>. Using this approach you can take advantages of modern Javascript/Typescript approach such as yarn package management, typing, etc. You can use variant <code>invest-*</code> libraries in your applications. Typically you wish to include <code>invest-components</code>, <code>invest-types</code> and <code>invest-plugins</code>.  We'd recommend you read the Ketos documentation for more example of building plugins in this manner.</p>
+<p>Alternatively you can craft the <code>index.html</code> as a traditional web page. In this case you will want to to include the <code>invest.js</code> file which is hosted on the server and gives you access to some of the functions that the various <code>invest-*</code> libraries have. You can include these in your index.html via the <code>script</code>/<code>link</code> tags:</p>
+<pre><code class="hljs css languages- html"><span class="hljs-tag">&lt;<span class="hljs-name">html</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span>
+        <span class="hljs-comment">&lt;!-- ALl of these are automatically hosted for you by the server --&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">link</span> <span class="hljs-attr">rel</span>=<span class="hljs-string">"stylesheet"</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"text/css"</span> <span class="hljs-attr">href</span>=<span class="hljs-string">"/ui/libs/semantic-2.2.css"</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"/ui/libs/react-16.0.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"/ui/libs/react-dom-16.0.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"/ui/libs/semantic-2.2.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"/ui/libs/jquery-3.2.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"/ui/libs/invest.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+
+        <span class="hljs-comment">&lt;!-- You have have other scripts/css you can just place them alongside your index.html --&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span>
+
+        <span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>My plugin<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span>
+
+        <span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="actionscript">
+            <span class="hljs-comment">// Your javascript code could go here... </span>
+        </span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+
+    <span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span>
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" id="which-web-development-approach"></a><a href="#which-web-development-approach" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Which web development approach?</h2>
+<p>Invest does not mandate a particular web framework for developers. However it is native support is for React.</p>
+<p>Whilst there is no reason that Angular or others could not be used in Invest we'll stick to Typescript and React in this guide.</p>
+<h2><a class="anchor" aria-hidden="true" id="creating-a-project"></a><a href="#creating-a-project" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Creating a project</h2>
+<p>Ensure you have create-react-app installed:</p>
+<pre><code class="hljs css languages- bash">npm install -g create-react-app
+</code></pre>
+<p>then create a new project (we've called it invest-ui-myplugin but you should pick something different):</p>
+<pre><code class="hljs css languages- bash">create-react-app invest-ui-myplugin --scripts-version=react-scripts-ts
+<span class="hljs-built_in">cd</span> invest-ui-myplugin
+</code></pre>
+<p>In order to use the live Development Plugin later, in <code>package.json</code> add <code>PORT=3001</code> to the front of the <code>start</code> script.</p>
+<pre><code class="hljs css languages- bash">   ...
+<span class="hljs-string">"scripts"</span>: {
+   <span class="hljs-string">"start"</span>: <span class="hljs-string">"PORT=3001 react-scripts-ts start"</span>,
+   ...
+</code></pre>
+<p>Add the <code>invest-plugin</code> project as a dependency, and we'll use <code>semantic-ui-react</code> with its default CSS:</p>
+<pre><code class="hljs">yarn <span class="hljs-keyword">add</span><span class="bash"> invest-plugin semantic-ui-react semantic-ui-css
+</span></code></pre>
+<p>You should now have a working web app, which you can test running visiting:</p>
+<pre><code class="hljs css languages- bash">yarn start
+</code></pre>
+<p>which should start the application in development mode and open a browser at <a href="http://localhost:3001/">http://localhost:3001/</a>.</p>
+<p>You might see an error:</p>
+<pre><code class="hljs css languages- bash">...invest-ui-myplugin/node_modules/@types/graphql/subscription/subscribe.d.ts
+(17,4): error TS2304: Cannot find name <span class="hljs-string">'AsyncIterator'</span>.
+</code></pre>
+<p>If so, stop the app, edit <code>tsconfig.json</code> and add to the compilerOptions.libs array 'esnext':</p>
+<pre><code class="hljs css languages- json">{
+ "compilerOptions": {
+   "outDir": "build/dist",
+   "module": "esnext",
+   "target": "es5",
+   "lib": ["es6", "dom", "esnext"],
+   "sourceMap": true,
+   ...
+</code></pre>
+<p>Then run <code>yarn start</code> again.</p>
+<h2><a class="anchor" aria-hidden="true" id="making-a-hello-world-application"></a><a href="#making-a-hello-world-application" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Making a hello world application</h2>
+<p>As convention dictates, we'll create a HelloWorld plugin. We can start clearing out the boilerplate form create-react-app:</p>
+<ul>
+<li>Delete App.css</li>
+<li>Delete App.tsx.test</li>
+<li>Amend App.tsx to read:</li>
+</ul>
+<pre><code class="hljs css languages- ts">import * as React from 'react';
+
+class App extends React.Component {
+ render() {
+   return (
+     &lt;div&gt;
+       &lt;p&gt;Hello world&lt;/p&gt;
+     &lt;/div&gt;
+   );
+ }
+}
+
+export default App;
+</code></pre>
+<p>Now in <code>index.tsx</code> we'll add our CSS for <code>semantic-ui</code>, add near the top:</p>
+<pre><code class="hljs css languages- ts"><span class="hljs-keyword">import</span> <span class="hljs-string">'semantic-ui-css/semantic.min.css'</span>
+</code></pre>
+<p>Then you can drop in a replacement <code>ReactDOM.render()</code>, at the bottom of the file:</p>
+<pre><code class="hljs css languages- ts">import { InvestUiPlugin } from 'invest-plugin'
+
+ReactDOM.render(
+ &lt;InvestUiPlugin&gt;
+   &lt;App /&gt;
+ &lt;/InvestUiPlugin&gt;,
+ document.getElementById('root') as HTMLElement
+)
+</code></pre>
+<p>Check back in the browser to see that 'Hello World' is displayed.</p>
+<p>Run Invest Server with the live development plugin. Clicking on the Live Development plugin will show the same Hello World.</p>
+<h2><a class="anchor" aria-hidden="true" id="interacting-with-the-server-using-graphql"></a><a href="#interacting-with-the-server-using-graphql" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Interacting with the server, using GraphQL</h2>
+<p>Let's request some data form the server. However as the Invest Server may have no exciting plugins etc, let's just one of the basic inbuilt GraphQL queries.</p>
+<p>Our query will be:</p>
+<pre><code class="hljs css languages- graphql"><span class="hljs-section">query</span> {
+ <span class="hljs-section">applicationSettings</span> {
+   <span class="hljs-attribute">title</span>
+ }
+ }
+</code></pre>
+<p>Which will return JSON:</p>
+<pre><code class="hljs css languages- json">{
+ <span class="hljs-attr">"data"</span>: {
+   <span class="hljs-attr">"applicationSettings"</span>: {
+     <span class="hljs-attr">"title"</span>: <span class="hljs-string">"Invest"</span>
+   }
+ }
+}
+</code></pre>
+<p>Let's create a Hello.tsx which will display 'Hello from Invest' using the title from above:</p>
+<pre><code class="hljs css languages- typescript">import * as React from 'react'
+import { graphql, gql, QueryProps } from 'react-apollo'
+
+
+// Mirror our GraphQL result in a type safe interface
+interface Response {
+   applicationSettings: {
+       title: string
+   }
+}
+
+// In typescript we need to be very clear about types of props
+// we say here that graphQL is going to provide us with a data field
+// and that it'll have the GraphQL QueryProps (ie loading, refetch())
+// plus the stuff in Response defined above
+interface Props {
+   data?: QueryProps &amp; Partial&lt;Response&gt;
+}
+
+class Hello extend React.Component&lt;Props&gt; {
+   render() {
+       const { data } = props
+
+       // Check if we have something to display...
+       if (!data || data.loading || !data.applicationSettings) {
+           // Display a placeholder...
+           // In a real app this would be a spinner / loader
+           return 'Waiting for who I am...'
+       }
+
+       // if we do, they print it
+       return (
+           &lt;p&gt;Hello from {data.applicationSettings.title}&lt;/p&gt;
+       )
+   }
+}
+
+// Define the GraphQL query we want
+const TITLE_QUERY = gql`
+query GetTitle {
+ applicationSettings {
+   title
+ }
+}
+`
+
+// Use the graphql function to wrap our component
+// Apollo will run our TITLE_QUERY and then provide the result
+// in the data field in our props.
+export default graphql&lt;Response, {}, Props&gt;(TITLE_QUERY)(container)
+
+</code></pre>
+<p>It's perhaps worth noting here that this GraphQL query is connected to our server through the RPC layer and the Outer Frame when run inside Invest and when run outside Invest (localhost:3001) we pass it directly to the server.</p>
+<p>Now we change <code>App.tsx</code> to use our Hello component:</p>
+<pre><code class="hljs css languages- typescript">import * as React from 'react';
+
+// New:
+import Hello from './hello'
+
+class App extends React.Component {
+ render() {
+   return (
+     &lt;div&gt;
+       &lt;Hello /&gt;
+     &lt;/div&gt;
+   );
+ }
+}
+
+export default App;
+</code></pre>
+<p>If you look at the browser now (<a href="http://localhost:3001">http://localhost:3001</a> or the live development plugin) you should see 'Hello from Invest' (or whatever your app is called). If you refresh you might see the 'Waiting for who I am...' message flicker.</p>
+<p>If you really want to see it say that in the <a href="http://localhost:3001">http://localhost:3001</a> tab, use the debug view to place a breakpoint in the render function of Hello.tsx.</p>
+<h2><a class="anchor" aria-hidden="true" id="adding-an-action"></a><a href="#adding-an-action" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Adding an action</h2>
+<p>Our plugin doesn't have any actions itself, but perhaps it could be passed the name of someone to say hello to.</p>
+<p>The way a InvestUiPlugin React component receives an action is through its props. Lets change App.tsx to respond to those props.</p>
+<pre><code class="hljs css languages- typescript">
+import { ChildProps } from 'invest-plugin'
+
+// Store the name to say hello to in state
+interface State {
+   name?: string
+}
+
+// Our action is 'hello', but it has a payload which
+// (may) contains the name
+interface NamePayload {
+   name?: string
+}
+
+// We add props and State types now.
+// ChildProps are the Props that InvestPlugin will give to its
+// React child.
+class App extends React.Component&lt;ChildProps, State&gt; {
+  state: State = {
+     // Start with no name
+     name: null
+ }
+
+ componentWillReceiveProps(nextProps: Props) {
+   // Process action / payload if its changed
+   if (this.props.action !== nextProps.action || !isEqual(this.props.payload, nextProps.payload)) {
+  
+     // If we support the action deal with it
+     if(this.props.action === 'hello') {
+       // Payload is any, but we know it must be a view payload now
+       const payload = nextProps.payload as NamePayload
+       this.setState({
+           name: payload ? payload.name : undefined,
+       })
+     }
+   }
+ }
+  render() {
+   const { name } = this.state
+
+   // Add a second line, but is name is null/undefined/etc
+   // just say 'whoever'
+   return (
+       &lt;div&gt;
+           &lt;Hello /&gt;
+           &lt;p&gt;Nice to meet you, {name || 'whoever you are'}.&lt;/p&gt;
+       &lt;/div&gt;
+       );
+   }
+ }
+
+}
+</code></pre>
+<p>If we view this in the Live development plugin we'll just see the extra line but no name. That's because we've not triggered the action.</p>
+<p>You can use the Action Development Plugin to send an action to a Plugin. Select this, then select the Live Development Plugin. In the action textfield enter 'hello' and in the payload enter</p>
+<pre><code class="hljs css languages- json">{
+   <span class="hljs-attr">"name"</span>: <span class="hljs-string">"John Smith"</span>
+}
+</code></pre>
+<p>Click Send to test the action, and the Live Development Plugin should reappear, with 'John Smith' now the name.</p>
+<h2><a class="anchor" aria-hidden="true" id="build-the-ui-plugin"></a><a href="#build-the-ui-plugin" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Build the UI plugin</h2>
+<p>So far we've been running the plugin live, but let's build a production version. Stop the development version (Ctrl+C) and then run</p>
+<pre><code class="hljs css languages- bash">yarn build
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" id="investjson"></a><a href="#investjson" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Invest.json</h2>
+<p>The invest.json has a standard layout of fields (defined effectively by <code>PluginJson</code> class in <code>invest-ui-plugin-host</code>):</p>
+<pre><code class="hljs css languages- json">{
+    <span class="hljs-attr">"id"</span>: <span class="hljs-string">"unique_plugin_id"</span>,
+    <span class="hljs-attr">"name"</span>: <span class="hljs-string">"Friendly name"</span>,
+    <span class="hljs-attr">"description"</span>: <span class="hljs-string">"Short description"</span>,
+    <span class="hljs-attr">"icon"</span>: <span class="hljs-string">"user"</span>,
+    <span class="hljs-attr">"roles"</span>: [<span class="hljs-string">"USER"</span>, <span class="hljs-string">"DEV"</span>, <span class="hljs-string">"ADMIN"</span>],
+    <span class="hljs-attr">"actions"</span>: [
+                {
+            <span class="hljs-attr">"title"</span>: <span class="hljs-string">"Short name"</span>,
+            <span class="hljs-attr">"description"</span>: <span class="hljs-string">"What is does"</span>,
+            <span class="hljs-attr">"action"</span>: <span class="hljs-string">"the.action.name"</span>
+        }
+    ]
+}
+</code></pre>
+<p>Here <code>&quot;id&quot;</code> should uniquely reference your plugin. It should be URL safe so we'd suggest using lower case alphanumerical charactoers together with - (kebab case).</p>
+<p>The <code>&quot;name&quot;</code> and <code>&quot;description&quot;</code> are displayed in the menu sidebar. The name alone should be very clear to the user, but the description allows a little more information to help the user understand what the view will display.</p>
+<p>The <code>&quot;icon&quot;</code> is a <a href="https://react.semantic-ui.com/elements/icon">Semantic UI icon</a> which will be displayed next to the name in the side bar.</p>
+<p>The <code>&quot;roles&quot;</code> specify which user roles should be plugin be displayed to. Typically this will be left empty, meaning everyone. Certain plugins will be for DEVelopers or ADMINistrators only.</p>
+<p>The <code>&quot;actions&quot;</code> section declare which actions can be sent to this plugin. An action in an indication that the plugin should so something in response to input. An action has a payload which carries information about tha action, for example the document to display or the user id to edit. The <code>&quot;title&quot;</code> and <code>&quot;description&quot;</code> of the action will be displayed to users before they click the action (in another plugin), so should be clear on the result of clicking that action. They might say &quot;Edit user&quot; for example. The <code>&quot;action&quot;</code> field in <code>invest.json</code> is the string constant. It is freeform, defined by your application needs and your plugins. Obviously the calling plugin and the receiving plugin need to use the same string. Typically the actions are of the form <code>datatype.method</code> such as <code>document.view</code> or <code>user.edit</code>. See the Ketos documentation for some illustrative examples of real world actions.</p>
+<p>In the above example we had an action called <code>hello</code>. Our <code>invest.json</code> might look like:</p>
+<pre><code class="hljs css languages- json">{
+    <span class="hljs-attr">"id"</span>: <span class="hljs-string">"hello"</span>,
+    <span class="hljs-attr">"name"</span>: <span class="hljs-string">"Hello"</span>,
+    <span class="hljs-attr">"description"</span>: <span class="hljs-string">"Displays hello"</span>,
+    <span class="hljs-attr">"icon"</span>: <span class="hljs-string">"comments"</span>,
+    <span class="hljs-attr">"roles"</span>: [],
+    <span class="hljs-attr">"actions"</span>: [
+                {
+            <span class="hljs-attr">"title"</span>: <span class="hljs-string">"Hi"</span>,
+            <span class="hljs-attr">"description"</span>: <span class="hljs-string">"Hi to you"</span>,
+            <span class="hljs-attr">"action"</span>: <span class="hljs-string">"hello"</span>
+        }
+    ]
+}
+</code></pre>
+<p>Your build system will determine where you place your <code>invest.json</code>. It needs to be configured such that it is output to the same directory as your <code>index.html</code>. For <code>create-react-app</code> type projects place it in the <code>public/</code> directory.</p>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/ui.system-url.html">← System design: URL</a><a class="docs-next button" href="/docs/ui.dev-app-module.html">Advanced: Developing a new main application frontend →</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><div><h5>Sitemap</h5><a href="/docs/about.html">About</a><a href="/docs/server.index.html">Server</a><a href="/docs/ui.index.html">UI</a></div><div><h5>Resources</h5><a href="https://github.com/commitd/invest">Source</a></div></section><section class="copyright">Copyright © 2018 Committed</section></footer></div></body></html>
