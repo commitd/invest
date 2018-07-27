@@ -18,12 +18,11 @@ git clone https://github.com/commitd/invest.git
 # cd invest-ui
 ```
 
-## Where's the actual code? 
+## Where's the actual code?
 
 Quite right!
 
 This is a top level project repository, but the actual code is held under to separate repositories:
 
-* [Invest Java](https://jenkins.committed.software/job/invest-server) for backend server code
-* [Invest JS](https://jenkins.committed.software/job/invest-ui) for the frontend web code
-
+- [Invest Server](https://github.com/commitd/jonah-server) for backend server code
+- [Invest UI](https://github.com/commitd/jonah-ui) for the frontend web code
