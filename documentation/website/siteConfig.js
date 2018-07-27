@@ -13,20 +13,21 @@ const users = [
   //   infoLink: 'https://www.facebook.com',
   //   pinned: true,
   // },
-];
+]
 
 const siteConfig = {
   title: 'Invest' /* title for your website */,
-  tagline: 'Modular framework for server and ui',
-  url: 'https://committed.bitbucket.io/invest' /* your website url */,
-  baseUrl: '/' /* base url for your project */,
+  tagline: 'Modular framework for server and ui development',
+  url: 'https://commitd.github.com/invest' /* your website url */,
+  baseUrl: '/invest/' /* base url for your project */,
   projectName: 'Invest',
   headerLinks: [
     { doc: 'about', label: 'About' },
     { doc: 'dev.reading-list', label: 'Development' },
     { doc: 'ui.index', label: 'UI' },
     { doc: 'server.index', label: 'Server' },
-    { href: 'https://bitbucket.org/committed/invest-java', label: 'Source' },
+    { href: 'https://github.com/commitd/invest-server', label: 'Server Source' },
+    { href: 'https://github.com/commitd/invest-ui', label: 'UI Source' }
   ],
   users,
   /* path to images for header/footer */
@@ -36,22 +37,19 @@ const siteConfig = {
   /* colors for website */
   colors: {
     primaryColor: '#000000',
-    secondaryColor: '#ddd',
+    secondaryColor: '#ddd'
   },
   // This copyright info is used in /core/Footer.js and blog rss/atom feeds.
-  copyright:
-    'Copyright © ' +
-    new Date().getFullYear() +
-    ' Committed',
-  organizationName: 'Committed', // or set an env variable ORGANIZATION_NAME
+  copyright: 'Copyright © ' + new Date().getFullYear() + ' Committed',
+  organizationName: 'commitd', // or set an env variable ORGANIZATION_NAME
   projectName: 'invest', // or set an env variable PROJECT_NAME
   highlight: {
     // Highlight.js theme to use for syntax highlighting in code blocks
-    theme: 'default',
+    theme: 'default'
   },
   scripts: ['https://buttons.github.io/buttons.js'],
   // You may provide arbitrary config keys to be used as needed by your template.
-  repoUrl: 'https://bitbucket.org/committed/invest-java',
-};
+  repoUrl: 'https://github.com/commitd/invest'
+}
 
-module.exports = siteConfig;
+module.exports = siteConfig
